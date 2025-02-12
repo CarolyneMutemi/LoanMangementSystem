@@ -1,0 +1,133 @@
+<!-- admin-management.component.html -->
+<div class="page-container">
+    <div class="page-header">
+      <h1>Admin Management</h1>
+      <button class="btn-primary" (click)="openAddModal()">
+        <i class="fas fa-plus"></i> Add Admin
+      </button>
+    </div>
+  
+    <div class="search-filter-container">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="filterAdmins()"
+          placeholder="Search by name, email, or ID"
+        >
+      </div>
+    </div>
+  
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let admin of filteredAdmins">
+            <td>{{ admin.id }}</td>
+            <td>{{ admin.fullName }}</td>
+            <td>
+              <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                {{ admin.email }}
+              </div>
+            </td>
+            <td>
+              <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                {{ admin.phone }}
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [ngClass]="{'active': admin.role === 'Super Admin'}">
+                {{ admin.role }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-icon" (click)="editAdmin(admin)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon" (click)="openDeleteModal(admin)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Add Admin Modal -->
+    <div class="modal" *ngIf="showAddModal">
+      <div class="modal-content">
+        <h2>Add New Admin</h2>
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            [(ngModel)]="newAdmin.fullName"
+            placeholder="Enter full name"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="newAdmin.email"
+            placeholder="Enter email address"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone</label>
+          <input
+            type="tel"
+            id="phone"
+            [(ngModel)]="newAdmin.phone"
+            placeholder="Enter phone number"
+            required
+          >
+        </div>
+        <div class="form-group">
+          <label for="role">Role</label>
+          <select id="role" [(ngModel)]="newAdmin.role" required>
+            <option value="Manager">Manager</option>
+            <option value="Super Admin">Super Admin</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="closeAddModal()">Cancel</button>
+          <button class="btn-primary" (click)="addAdmin()" [disabled]="!validateForm()">
+            Add Admin
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" *ngIf="showDeleteModal">
+      <div class="modal-content">
+        <h2>Delete Admin</h2>
+        <p class="warning-text">
+          Are you sure you want to delete {{ selectedAdmin?.fullName }}? This action cannot be undone.
+        </p>
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+          <button class="btn-danger" (click)="deleteAdmin()">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,63 @@
+<!-- login.component.html -->
+<div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Loan Management System</h1>
+        <p>Admin Login</p>
+      </div>
+  
+      <form (ngSubmit)="onSubmit()" class="login-form" #form="ngForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-with-icon">
+            <i class="fas fa-envelope input-icon"></i>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="loginForm.email"
+              placeholder="Enter your email"
+              [class.error]="errorMessage && !loginForm.email"
+              required
+            >
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-with-icon">
+            <i class="fas fa-lock input-icon"></i>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="password"
+              name="password"
+              [(ngModel)]="loginForm.password"
+              placeholder="Enter your password"
+              [class.error]="errorMessage && !loginForm.password"
+              required
+            >
+            <button 
+              type="button"
+              class="toggle-password"
+              (click)="togglePasswordVisibility()"
+            >
+              <i class="fas" [class.fa-eye]="!showPassword" [class.fa-eye-slash]="showPassword"></i>
+            </button>
+          </div>
+        </div>
+  
+        <div class="error-message" *ngIf="errorMessage">
+          {{ errorMessage }}
+        </div>
+  
+        <button 
+          type="submit" 
+          class="btn-primary login-button" 
+          [disabled]="isLoading"
+        >
+          <span *ngIf="!isLoading">Login</span>
+          <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        </button>
+      </form>
+    </div>
+  </div>

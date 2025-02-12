@@ -1,0 +1,180 @@
+<div class="page-container">
+    <!-- Header Section -->
+    <div class="page-header">
+      <h2>Loans</h2>
+      <button class="btn-primary" (click)="openAddLoanModal()">
+        <i class="fas fa-plus"></i> Add Loan
+      </button>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-filter-container">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          placeholder="Search loans..." 
+          [(ngModel)]="searchTerm"
+          (input)="applyFilters()"
+        >
+      </div>
+      <div class="filter-dropdown">
+        <button class="btn-filter" (click)="toggleFilterDropdown()">
+          <i class="fas fa-filter"></i>
+          Status
+        </button>
+        <div class="dropdown-content" *ngIf="showFilterDropdown">
+          <label *ngFor="let status of ['Active', 'Paid', 'Overdue']">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="filters[status.toLowerCase()]"
+              (change)="applyFilters()"
+            > {{status}}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loans Table -->
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Loan ID</th>
+            <th>Customer</th>
+            <th>Principal Amount</th>
+            <th>Interest Rate</th>
+            <th>Total Payable</th>
+            <th>Repayment Period</th>
+            <th>Frequency</th>
+            <th>Next Due Date</th>
+            <th>Installment</th>
+            <th>Paid Amount</th>
+            <th>Outstanding</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let loan of filteredLoans">
+            <td>{{loan.id}}</td>
+            <td>
+              <div class="customer-info">
+                <span>{{loan.customerName}}</span>
+                <small class="customer-id">{{loan.customerId}}</small>
+              </div>
+            </td>
+            <td>{{loan.principalAmount | currency}}</td>
+            <td>{{loan.interestRate}}%</td>
+            <td>{{loan.totalPayable | currency}}</td>
+            <td>{{loan.repaymentPeriod}} months</td>
+            <td>{{loan.repaymentFrequency}}</td>
+            <td>{{loan.nextDueDate | date}}</td>
+            <td>{{loan.amountPerInstallment | currency}}</td>
+            <td>{{loan.paidAmount | currency}}</td>
+            <td>{{loan.outstandingBalance | currency}}</td>
+            <td>
+              <span class="status-badge" [ngClass]="loan.status.toLowerCase()">
+                {{loan.status}}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-icon" (click)="viewLoan(loan)">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn-icon" (click)="editLoan(loan)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon" (click)="confirmDelete(loan)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add/Edit Loan Modal -->
+  <div class="modal" *ngIf="showLoanModal">
+    <div class="modal-content modal-lg">
+      <h3>{{editingLoan ? 'Edit' : 'Add'}} Loan</h3>
+      <form (ngSubmit)="saveLoan()">
+        <!-- Customer Selection -->
+        <div class="form-group">
+          <label>Customer</label>
+          <div class="customer-search">
+            <input 
+              type="text" 
+              [(ngModel)]="customerSearch" 
+              name="customerSearch"
+              placeholder="Search customer by name or ID..."
+              (input)="searchCustomers()"
+            >
+            <div class="customer-dropdown" *ngIf="showCustomerDropdown">
+              <div 
+                class="customer-option" 
+                *ngFor="let customer of filteredCustomers"
+                (click)="selectCustomer(customer)"
+              >
+                <span>{{customer.name}}</span>
+                <small>{{customer.id}}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loan Details -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Principal Amount</label>
+            <input type="number" [(ngModel)]="loanForm.principalAmount" name="principalAmount" required>
+          </div>
+          <div class="form-group">
+            <label>Interest Rate (%)</label>
+            <input type="number" [(ngModel)]="loanForm.interestRate" name="interestRate" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Repayment Period (months)</label>
+            <input type="number" [(ngModel)]="loanForm.repaymentPeriod" name="repaymentPeriod" required>
+          </div>
+          <div class="form-group">
+            <label>Repayment Frequency</label>
+            <select [(ngModel)]="loanForm.repaymentFrequency" name="repaymentFrequency" required>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Yearly">Yearly</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeLoanModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" *ngIf="showDeleteModal">
+    <div class="modal-content">
+      <h3>Confirm Delete</h3>
+      <p *ngIf="selectedLoan && selectedLoan.outstandingBalance > 0" class="warning-text">
+        Warning: This loan has an outstanding balance of {{selectedLoan.outstandingBalance | currency}}.
+        Are you sure you want to delete this loan?
+      </p>
+      <p *ngIf="selectedLoan?.outstandingBalance === 0">
+        Are you sure you want to delete this loan?
+      </p>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+        <button class="btn-danger" (click)="deleteLoan()">Delete</button>
+      </div>
+    </div>
+  </div>

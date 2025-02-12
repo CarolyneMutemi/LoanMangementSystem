@@ -1,0 +1,86 @@
+<!-- loan-repayment-schedule.component.html -->
+<div class="page-container">
+    <div class="page-header">
+      <h1>Loan Repayment Schedule</h1>
+    </div>
+  
+    <div class="search-filter-container">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="applyFilters()"
+          placeholder="Search by customer name, loan ID, or installment ID"
+        >
+      </div>
+  
+      <div class="filter-dropdown">
+        <button class="btn-filter" (click)="toggleFilters()">
+          <i class="fas fa-filter"></i>
+          Filters
+        </button>
+  
+        <div class="dropdown-content" *ngIf="showFilters">
+          <h4>Status</h4>
+          <label>
+            <input
+              type="checkbox"
+              [(ngModel)]="statusFilters['Paid']"
+              (change)="applyFilters()"
+            > Paid
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              [(ngModel)]="statusFilters['Pending']"
+              (change)="applyFilters()"
+            > Pending
+          </label>
+          <label>
+            <input
+              type="checkbox"
+              [(ngModel)]="statusFilters['Overdue']"
+              (change)="applyFilters()"
+            > Overdue
+          </label>
+          <button class="btn-secondary" (click)="clearFilters()">Clear Filters</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Installment ID</th>
+            <th>Loan ID</th>
+            <th>Customer Name</th>
+            <th>Installment No.</th>
+            <th>Due Date</th>
+            <th>Amount Due</th>
+            <th>Paid Amount</th>
+            <th>Remaining Balance</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let schedule of filteredSchedules">
+            <td>{{ schedule.installmentId }}</td>
+            <td>{{ schedule.loanId }}</td>
+            <td>{{ schedule.customerName }}</td>
+            <td>{{ schedule.installmentNo }}</td>
+            <td>{{ schedule.dueDate | date:'mediumDate' }}</td>
+            <td>{{ formatCurrency(schedule.amountDue) }}</td>
+            <td>{{ formatCurrency(schedule.paidAmount) }}</td>
+            <td>{{ formatCurrency(schedule.remainingBalance) }}</td>
+            <td>
+              <span class="status-badge" [ngClass]="getStatusClass(schedule.status)">
+                {{ schedule.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>

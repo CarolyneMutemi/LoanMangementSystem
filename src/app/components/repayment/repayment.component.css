@@ -1,0 +1,115 @@
+/* repayment.component.css */
+.date-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .filter-section {
+    margin-bottom: 1rem;
+  }
+  
+  .filter-section h4 {
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+  }
+  
+  .filter-section label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .filter-section input[type="checkbox"] {
+    cursor: pointer;
+  }
+  
+  .dropdown-content {
+    min-width: 300px;
+    padding: 1rem;
+  }
+  
+  .dropdown-content .btn-secondary {
+    width: 100%;
+    margin-top: 1rem;
+  }
+  
+  .customer-search {
+    position: relative;
+  }
+  
+  .customer-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--dark-grey);
+    border: 1px solid var(--lighter-grey);
+    border-radius: 0.5rem;
+    margin-top: 0.25rem;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+  
+  .customer-option {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+  }
+  
+  .customer-option:hover {
+    background-color: var(--lighter-grey);
+  }
+
+  /* Add these new styles to your existing CSS */
+.loan-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+  }
+  
+  .loan-reference {
+    font-weight: 500;
+  }
+  
+  .loan-customer {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  
+  .loan-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  
+  .customer-option {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+  }
+  
+  .customer-option:hover {
+    background-color: var(--hover-color);
+  }
+  
+  .customer-search input {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.25rem;
+    background-color: var(--input-background);
+    color: var(--text-color);
+  }
+  
+  .customer-search input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.1);
+  }

@@ -1,0 +1,148 @@
+<div class="page-container">
+    <!-- Header Section -->
+    <div class="page-header">
+      <h2>Customers</h2>
+      <button class="btn-primary" (click)="openAddCustomerModal()">
+        <i class="fas fa-plus"></i> Add Customer
+      </button>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="search-filter-container">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input 
+          type="text" 
+          placeholder="Search customers..." 
+          [(ngModel)]="searchTerm"
+          (input)="applyFilters()"
+        >
+      </div>
+      <div class="filter-dropdown">
+        <button class="btn-filter" (click)="toggleFilterDropdown()">
+          <i class="fas fa-filter"></i>
+          Status
+        </button>
+        <div class="dropdown-content" *ngIf="showFilterDropdown">
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="filters.active"
+              (change)="applyFilters()"
+            > Active
+          </label>
+          <label>
+            <input 
+              type="checkbox" 
+              [(ngModel)]="filters.cleared"
+              (change)="applyFilters()"
+            > Cleared
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customers Table -->
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Contact</th>
+            <th>Total Loans</th>
+            <th>Total Borrowed</th>
+            <th>Outstanding</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let customer of filteredCustomers">
+            <td>{{customer.id}}</td>
+            <td>{{customer.firstName}} {{customer.lastName}}</td>
+            <td>
+              <div class="contact-info">
+                <div class="contact-item">
+                  <i class="fas fa-envelope"></i>
+                  <span>{{customer.email}}</span>
+                </div>
+                <div class="contact-item">
+                  <i class="fas fa-phone"></i>
+                  <span>{{customer.phone}}</span>
+                </div>
+              </div>
+            </td>
+            <td>{{customer.totalLoans}}</td>
+            <td>{{customer.totalBorrowed | currency}}</td>
+            <td>{{customer.totalOutstanding | currency}}</td>
+            <td>
+              <span class="status-badge" [class.active]="customer.status === 'active'">
+                {{customer.status}}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <button class="btn-icon" (click)="viewCustomer(customer)">
+                  <i class="fas fa-eye"></i>
+                </button>
+                <button class="btn-icon" (click)="editCustomer(customer)">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon" (click)="confirmDelete(customer)">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Add/Edit Customer Modal -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <h3>{{editingCustomer ? 'Edit' : 'Add'}} Customer</h3>
+      <form (ngSubmit)="saveCustomer()">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" [(ngModel)]="customerForm.firstName" name="firstName" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" [(ngModel)]="customerForm.lastName" name="lastName" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="customerForm.email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" [(ngModel)]="customerForm.phone" name="phone" required>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" *ngIf="showDeleteModal">
+    <div class="modal-content">
+      <h3>Confirm Delete</h3>
+      <p *ngIf="selectedCustomer && selectedCustomer.totalOutstanding > 0" class="warning-text">
+        Warning: This customer has an outstanding balance of {{selectedCustomer.totalOutstanding | currency}}.
+        Are you sure you want to delete this customer?
+      </p>
+      <p *ngIf="selectedCustomer?.totalOutstanding === 0">
+        Are you sure you want to delete this customer?
+      </p>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+        <button class="btn-danger" (click)="deleteCustomer()">Delete</button>
+      </div>
+    </div>
+  </div>

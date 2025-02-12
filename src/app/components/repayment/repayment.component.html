@@ -1,0 +1,240 @@
+<!-- repayment.component.html -->
+<div class="page-container">
+    <div class="page-header">
+      <h1>Repayments</h1>
+      <button class="btn-primary" (click)="openAddModal()">
+        <i class="fas fa-plus"></i> Add Repayment
+      </button>
+    </div>
+  
+    <div class="search-filter-container">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="applyFilters()"
+          placeholder="Search by customer name, loan ID, or repayment ID"
+        >
+      </div>
+  
+      <div class="filter-dropdown">
+        <button class="btn-filter" (click)="toggleFilters()">
+          <i class="fas fa-filter"></i>
+          Filters
+        </button>
+  
+        <div class="dropdown-content" *ngIf="showFilters">
+          <div class="filter-section">
+            <h4>Date Range</h4>
+            <div class="date-filters">
+              <div class="form-group">
+                <label>Start Date</label>
+                <input
+                  type="date"
+                  [(ngModel)]="dateFilters.startDate"
+                  (change)="applyFilters()"
+                >
+              </div>
+              <div class="form-group">
+                <label>End Date</label>
+                <input
+                  type="date"
+                  [(ngModel)]="dateFilters.endDate"
+                  (change)="applyFilters()"
+                >
+              </div>
+            </div>
+          </div>
+  
+          <div class="filter-section">
+            <h4>Payment Method</h4>
+            <label *ngFor="let method of ['Bank', 'Mobile Money', 'Cash']">
+              <input
+                type="checkbox"
+                [(ngModel)]="methodFilters[method]"
+                (change)="applyFilters()"
+              > {{ method }}
+            </label>
+          </div>
+  
+          <button class="btn-secondary" (click)="clearFilters()">Clear Filters</button>
+        </div>
+      </div>
+    </div>
+  
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Repayment ID</th>
+            <th>Customer</th>
+            <th>Loan Reference</th>
+            <th>Amount Paid</th>
+            <th>Payment Date</th>
+            <th>Payment Method</th>
+            <th>Remaining Balance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let repayment of filteredRepayments">
+            <td>{{ repayment.id }}</td>
+            <td>{{ repayment.customerName }}</td>
+            <td>{{ repayment.loanReference }}</td>
+            <td>{{ formatCurrency(repayment.amount_paid) }}</td>
+            <td>{{ repayment.payment_date | date:'mediumDate' }}</td>
+            <td>{{ repayment.payment_method }}</td>
+            <td>{{ formatCurrency(repayment.remaining_balance) }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Add Repayment Modal -->
+    <div class="modal" *ngIf="showAddModal">
+      <div class="modal-content modal-lg">
+        <h2>Add New Repayment</h2>
+  
+        <!-- <div class="form-group">
+            <label>Customer</label>
+            <div class="customer-search">
+              <input
+                type="text"
+                [(ngModel)]="customerSearchTerm"
+                (input)="searchCustomers($event)"
+                placeholder="Search customer..."
+                (blur)="closeDropdowns()"
+              >
+              <div class="customer-dropdown" *ngIf="showCustomerDropdown && filteredCustomers.length > 0">
+                <div 
+                  class="customer-option"
+                  *ngFor="let customer of filteredCustomers"
+                  (click)="selectCustomer(customer)"
+                >
+                  <div class="customer-name">{{ customer.name }}</div>
+                  <div class="customer-email">{{ customer.email }}</div>
+                </div>
+              </div>
+            </div>
+        </div>
+  
+          <div class="form-group">
+            <label>Loan</label>
+            <div class="customer-search">
+              <input
+                type="text"
+                [(ngModel)]="loanSearchTerm"
+                (input)="searchLoans($event)"
+                placeholder="Search loan..."
+                [disabled]="!selectedCustomer"
+                (blur)="closeDropdowns()"
+              >
+              <div class="customer-dropdown" *ngIf="showLoanDropdown && filteredLoans.length > 0">
+                <div 
+                  class="customer-option"
+                  *ngFor="let loan of filteredLoans"
+                  (click)="selectLoan(loan)"
+                >
+                  <div class="loan-reference">{{ loan.reference }}</div>
+                  <div class="loan-balance">Remaining: {{ formatCurrency(loan.remaining_balance) }}</div>
+                </div>
+              </div>
+            </div>
+          </div> -->
+  
+        <div class="form-row">
+            <div class="form-group">
+                <label>Customer</label>
+                <div class="customer-search">
+                  <input
+                    type="text"
+                    [(ngModel)]="customerSearchTerm"
+                    (input)="searchCustomers($event)"
+                    placeholder="Search customer by name or email..."
+                    (blur)="closeDropdowns()"
+                  >
+                  <div class="customer-dropdown" *ngIf="showCustomerDropdown && filteredCustomers.length > 0">
+                    <div 
+                      class="customer-option"
+                      *ngFor="let customer of filteredCustomers"
+                      (click)="selectCustomer(customer)"
+                    >
+                      <div class="customer-name">{{ customer.name }}</div>
+                      <div class="customer-email">{{ customer.email }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              <div class="form-group">
+                <label>Loan</label>
+                <div class="customer-search">
+                  <input
+                    type="text"
+                    [(ngModel)]="loanSearchTerm"
+                    (input)="searchLoans($event)"
+                    placeholder="Search loan by ID or reference..."
+                    (blur)="closeDropdowns()"
+                  >
+                  <div class="customer-dropdown" *ngIf="showLoanDropdown && filteredLoans.length > 0">
+                    <div 
+                      class="customer-option"
+                      *ngFor="let loan of filteredLoans"
+                      (click)="selectLoan(loan)"
+                    >
+                      <div class="loan-header">
+                        <span class="loan-reference">{{ loan.reference }}</span>
+                        <span class="loan-customer">{{ loan.customerName }}</span>
+                      </div>
+                      <div class="loan-details">
+                        <span>Balance: {{ formatCurrency(loan.remaining_balance) }}</span>
+                        <span>Total: {{ formatCurrency(loan.total_amount) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+  
+        <div class="form-row">
+            <div class="form-group">
+              <label>Amount Paid</label>
+              <input
+                type="number"
+                [(ngModel)]="newRepayment.amount_paid"
+                placeholder="Enter amount"
+                required
+              >
+            </div>
+    
+            <div class="form-group">
+              <label>Payment Method</label>
+              <select [(ngModel)]="newRepayment.payment_method" required>
+                <option value="Bank">Bank</option>
+                <option value="Mobile Money">Mobile Money</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </div>
+          </div>
+        <div class="form-group">
+          <label>Payment Date</label>
+          <input
+            type="date"
+            [(ngModel)]="newRepayment.payment_date"
+            required
+          >
+        </div>
+  
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="closeAddModal()">Cancel</button>
+          <button 
+            class="btn-primary" 
+            (click)="addRepayment()"
+            [disabled]="!validateForm()"
+          >
+            Add Repayment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

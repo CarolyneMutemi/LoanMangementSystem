@@ -1,0 +1,173 @@
+<!-- profile.component.html -->
+<div class="page-container">
+    <div class="profile-card card">
+      <div class="profile-header">
+        <div class="profile-picture-container">
+          <img src="assets/default-profile.png" alt="Profile Picture" class="profile-picture">
+        </div>
+        <div class="profile-actions">
+          <button class="btn-primary" (click)="openEditModal()">
+            <i class="fas fa-edit"></i> Edit Profile
+          </button>
+          <button class="btn-secondary" (click)="openPasswordModal()">
+            <i class="fas fa-key"></i> Change Password
+          </button>
+        </div>
+      </div>
+  
+      <div class="profile-details">
+        <div class="detail-group">
+          <label>Full Name</label>
+          <p>{{ profile.fullName }}</p>
+        </div>
+        
+        <div class="detail-group">
+          <label>Email</label>
+          <p>
+            <i class="fas fa-envelope"></i>
+            {{ profile.email }}
+          </p>
+        </div>
+  
+        <div class="detail-group">
+          <label>Phone Number</label>
+          <p>
+            <i class="fas fa-phone"></i>
+            {{ profile.phone }}
+          </p>
+        </div>
+  
+        <div class="detail-group">
+          <label>Role</label>
+          <p>
+            <span class="status-badge" [ngClass]="{'active': profile.role === 'Super Admin'}">
+              {{ profile.role }}
+            </span>
+          </p>
+        </div>
+  
+        <div class="detail-group">
+          <label>User ID</label>
+          <p>{{ profile.id }}</p>
+        </div>
+  
+        <div class="detail-group">
+          <label>Date Joined</label>
+          <p>
+            <i class="fas fa-calendar"></i>
+            {{ profile.dateJoined | date:'mediumDate' }}
+          </p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Edit Profile Modal -->
+    <div class="modal" *ngIf="showEditModal">
+      <div class="modal-content">
+        <h2>Edit Profile</h2>
+        
+        <div class="profile-picture-upload">
+          <img src="assets/default-profile.png" alt="Profile Picture">
+          <div class="upload-overlay">
+            <label for="profile-picture" class="upload-button">
+              <i class="fas fa-camera"></i>
+              Change Picture
+            </label>
+            <input
+              type="file"
+              id="profile-picture"
+              accept="image/*"
+              (change)="onFileSelected($event)"
+              hidden
+            >
+          </div>
+        </div>
+  
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            [(ngModel)]="editedProfile.fullName"
+            placeholder="Enter full name"
+            required
+          >
+        </div>
+  
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            [(ngModel)]="editedProfile.email"
+            placeholder="Enter email"
+            required
+          >
+        </div>
+  
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input
+            type="tel"
+            id="phone"
+            [(ngModel)]="editedProfile.phone"
+            placeholder="Enter phone number"
+            required
+          >
+        </div>
+  
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="closeEditModal()">Cancel</button>
+          <button class="btn-primary" (click)="saveProfile()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Change Password Modal -->
+    <div class="modal" *ngIf="showPasswordModal">
+      <div class="modal-content">
+        <h2>Change Password</h2>
+        
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input
+            type="password"
+            id="currentPassword"
+            [(ngModel)]="passwordForm.currentPassword"
+            required
+          >
+        </div>
+  
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input
+            type="password"
+            id="newPassword"
+            [(ngModel)]="passwordForm.newPassword"
+            required
+          >
+        </div>
+  
+        <div class="form-group">
+          <label for="confirmPassword">Confirm New Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            [(ngModel)]="passwordForm.confirmPassword"
+            required
+          >
+        </div>
+  
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="closePasswordModal()">Cancel</button>
+          <button 
+            class="btn-primary" 
+            (click)="changePassword()"
+            [disabled]="!validatePasswordForm()"
+          >
+            Update Password
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
